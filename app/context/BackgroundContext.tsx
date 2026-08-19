@@ -13,15 +13,25 @@
 //   thumbnail: string;
 //   src: string;
 //   overlay?: string;
+//   /** CSS background value (color or gradient) used when there's no image `src`. */
+//   gradient?: string;
+//   /**
+//    * When true, renders the full animated <CyberVoidBackground /> scene
+//    * instead of the static `gradient`/`src`. Used for the "felt" default.
+//    */
+//   animated?: boolean;
 // }
 
 // export const BACKGROUNDS: BackgroundOption[] = [
 //   {
 //     id: "felt",
-//     label: "Green Felt",
+//     label: "Cyber Void",
 //     thumbnail: "",
 //     src: "",
 //     overlay: undefined,
+//     gradient:
+//       "radial-gradient(ellipse at center, #180f05 0%, #0a0603 68%), radial-gradient(ellipse at center, transparent 32%, #0a0603 88%)",
+//     animated: true,
 //   },
 //   {
 //     id: "space",
@@ -127,7 +137,6 @@
 // }
 
 // export const useBackground = () => useContext(BackgroundContext);
-
 "use client";
 
 import {
@@ -136,6 +145,9 @@ import {
   useContext,
   useSyncExternalStore,
 } from "react";
+
+/** Which animated scene component to render for this option, if any. */
+export type AnimatedBackgroundVariant = "cyberVoid" | "matrixCore";
 
 export interface BackgroundOption {
   id: string;
@@ -146,10 +158,11 @@ export interface BackgroundOption {
   /** CSS background value (color or gradient) used when there's no image `src`. */
   gradient?: string;
   /**
-   * When true, renders the full animated <CyberVoidBackground /> scene
-   * instead of the static `gradient`/`src`. Used for the "felt" default.
+   * When set, renders the matching animated scene component instead of the
+   * static `gradient`/`src`. See AppBackground / SettingsPage for the
+   * variant -> component mapping.
    */
-  animated?: boolean;
+  animated?: AnimatedBackgroundVariant;
 }
 
 export const BACKGROUNDS: BackgroundOption[] = [
@@ -161,7 +174,17 @@ export const BACKGROUNDS: BackgroundOption[] = [
     overlay: undefined,
     gradient:
       "radial-gradient(ellipse at center, #180f05 0%, #0a0603 68%), radial-gradient(ellipse at center, transparent 32%, #0a0603 88%)",
-    animated: true,
+    animated: "cyberVoid",
+  },
+  {
+    id: "matrix",
+    label: "Matrix Core",
+    thumbnail: "",
+    src: "",
+    overlay: undefined,
+    gradient:
+      "radial-gradient(ellipse at center, #170a2e 0%, #050108 70%), radial-gradient(ellipse at center, transparent 30%, #050108 90%)",
+    animated: "matrixCore",
   },
   {
     id: "space",
