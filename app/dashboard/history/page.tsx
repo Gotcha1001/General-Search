@@ -59,20 +59,22 @@ export default function HistoryPage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 p-6 md:p-10">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">My searches</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-semibold tracking-tight text-white">
+          My searches
+        </h1>
+        <p className="text-white text-sm">
           Everything you&apos;ve looked up, in one place.
         </p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 sm:max-w-xs">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <Search className="text-white absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter by search term..."
-            className="pl-9"
+            className="pl-9 text-white placeholder:text-white/70 border-white/40 bg-white/5 hover:bg-white/15 hover:border-white/60 focus:bg-white/15 focus:border-white transition-colors"
           />
         </div>
         <div className="flex gap-1.5">
@@ -80,8 +82,12 @@ export default function HistoryPage() {
             <Button
               key={tab.value}
               size="sm"
-              variant={statusFilter === tab.value ? "default" : "outline"}
               onClick={() => setStatusFilter(tab.value)}
+              className={
+                statusFilter === tab.value
+                  ? "bg-white text-black hover:bg-black hover:text-white transition-colors"
+                  : "border border-white/40 bg-transparent text-white hover:bg-white hover:text-black transition-colors"
+              }
             >
               {tab.label}
             </Button>
@@ -90,10 +96,10 @@ export default function HistoryPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-muted-foreground text-sm">Loading...</div>
+        <div className="text-white text-sm">Loading...</div>
       ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="text-muted-foreground pt-6 text-center text-sm">
+        <Card className="border-white/20 bg-white/5">
+          <CardContent className="text-white pt-6 text-center text-sm">
             {history && history.length === 0
               ? "No searches yet — try something from the dashboard to get your first search."
               : "No searches match that filter."}
@@ -113,14 +119,14 @@ export default function HistoryPage() {
                   router.push(`/dashboard/search?id=${h._id}`);
                 }
               }}
-              className="group hover:bg-muted flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors"
+              className="group hover:bg-white hover:text-black flex cursor-pointer items-center justify-between rounded-lg border border-white/20 px-4 py-3 text-sm text-white transition-colors"
             >
               <span className="flex items-center gap-2 font-medium">
                 <StatusIcon status={h.status} />
                 {h.query}
               </span>
               <div className="flex items-center gap-3">
-                <span className="text-muted-foreground text-xs">
+                <span className="text-white text-xs group-hover:text-black transition-colors">
                   {new Date(h.createdAt).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "short",
@@ -130,7 +136,7 @@ export default function HistoryPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:text-destructive h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                  className="text-white hover:text-destructive group-hover:text-black h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 hover:!text-destructive"
                   disabled={deletingId === h._id}
                   onClick={(e) => handleDelete(h._id, e)}
                   aria-label={`Delete search for ${h.query}`}

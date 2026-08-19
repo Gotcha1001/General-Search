@@ -1,16 +1,20 @@
 // "use client";
 
-// import { createContext, useContext, useEffect, useState } from "react";
+// import {
+//   createContext,
+//   useCallback,
+//   useContext,
+//   useSyncExternalStore,
+// } from "react";
 
 // export interface BackgroundOption {
 //   id: string;
 //   label: string;
-//   thumbnail: string; // path in /public
-//   src: string; // path in /public
-//   overlay?: string; // optional CSS color overlay e.g. "rgba(0,0,0,0.45)"
+//   thumbnail: string;
+//   src: string;
+//   overlay?: string;
 // }
 
-// // ── Add your images to /public/backgrounds/ and list them here ──────────────
 // export const BACKGROUNDS: BackgroundOption[] = [
 //   {
 //     id: "felt",
@@ -59,6 +63,33 @@
 // const STORAGE_KEY = "uno-board-bg";
 // const DEFAULT_ID = "felt";
 
+// // Same-tab updates (storage event only fires across tabs)
+// const listeners = new Set<() => void>();
+// function emit() {
+//   listeners.forEach((l) => l());
+// }
+
+// function subscribe(listener: () => void) {
+//   listeners.add(listener);
+//   if (typeof window !== "undefined") {
+//     window.addEventListener("storage", listener);
+//   }
+//   return () => {
+//     listeners.delete(listener);
+//     if (typeof window !== "undefined") {
+//       window.removeEventListener("storage", listener);
+//     }
+//   };
+// }
+
+// function getSnapshot() {
+//   return localStorage.getItem(STORAGE_KEY) ?? DEFAULT_ID;
+// }
+
+// function getServerSnapshot() {
+//   return DEFAULT_ID;
+// }
+
 // interface BackgroundContextValue {
 //   selected: BackgroundOption;
 //   setBackground: (id: string) => void;
@@ -74,18 +105,16 @@
 // }: {
 //   children: React.ReactNode;
 // }) {
-//   const [selectedId, setSelectedId] = useState<string>(() => {
-//     // Only runs on the client, once, at mount time
-//     if (typeof window === "undefined") return DEFAULT_ID;
-//     const saved = localStorage.getItem(STORAGE_KEY);
-//     if (saved && BACKGROUNDS.find((b) => b.id === saved)) return saved;
-//     return DEFAULT_ID;
-//   });
+//   const selectedId = useSyncExternalStore(
+//     subscribe,
+//     getSnapshot,
+//     getServerSnapshot,
+//   );
 
-//   const setBackground = (id: string) => {
-//     setSelectedId(id);
+//   const setBackground = useCallback((id: string) => {
 //     localStorage.setItem(STORAGE_KEY, id);
-//   };
+//     emit(); // notify this tab
+//   }, []);
 
 //   const selected =
 //     BACKGROUNDS.find((b) => b.id === selectedId) ?? BACKGROUNDS[0];
@@ -98,6 +127,7 @@
 // }
 
 // export const useBackground = () => useContext(BackgroundContext);
+
 "use client";
 
 import {
@@ -113,15 +143,25 @@ export interface BackgroundOption {
   thumbnail: string;
   src: string;
   overlay?: string;
+  /** CSS background value (color or gradient) used when there's no image `src`. */
+  gradient?: string;
+  /**
+   * When true, renders the full animated <CyberVoidBackground /> scene
+   * instead of the static `gradient`/`src`. Used for the "felt" default.
+   */
+  animated?: boolean;
 }
 
 export const BACKGROUNDS: BackgroundOption[] = [
   {
     id: "felt",
-    label: "Green Felt",
+    label: "Cyber Void",
     thumbnail: "",
     src: "",
     overlay: undefined,
+    gradient:
+      "radial-gradient(ellipse at center, #180f05 0%, #0a0603 68%), radial-gradient(ellipse at center, transparent 32%, #0a0603 88%)",
+    animated: true,
   },
   {
     id: "space",
